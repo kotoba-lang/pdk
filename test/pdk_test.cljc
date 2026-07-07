@@ -6,7 +6,9 @@
             [pdk]
             [pdk.technology :as tech]
             [pdk.stdcell :as stdcell]
-            [pdk.memory :as memory]))
+            [pdk.memory :as memory]
+            [pdk.liberty :as liberty]
+            [pdk.lef :as lef]))
 
 (deftest namespace-loads
   (testing "the restored CLJC namespace loads"
@@ -20,6 +22,38 @@
     (is (and (> w 0.0) (< w 1.0)))
     (is (some? (tech/metal-pitch tf 1)))))
 
+;; mirrors `liberty_cell_lookup`
+(deftest liberty-cell-lookup
+  (let [lib-str "
+library (test_lib) {
+  nom_voltage : 0.9 ;
+  nom_temperature : 25 ;
+  time_unit : \"1ns\" ;
+  cell (INV_X1) {
+    area : 0.8 ;
+    cell_leakage_power : 0.001 ;
+    pin (A) {
+      direction : input ;
+      capacitance : 0.002 ;
+    }
+    pin (Y) {
+      direction : output ;
+      function : \"!A\" ;
+    }
+  }
+  cell (NAND2_X1) {
+    area : 1.2 ;
+  }
+}
+"
+        lib (liberty/parse-liberty lib-str)]
+    (is (= 2 (liberty/cell-count lib)))
+    (let [inv (liberty/find-cell lib "INV_X1")]
+      (is (some? inv))
+      (is (< (Math/abs (- (:area inv) 0.8)) 1e-6)))
+    (is (some? (liberty/find-cell lib "NAND2_X1")))
+    (is (nil? (liberty/find-cell lib "MISSING")))))
+
 ;; mirrors `stdcell_library_generic`
 (deftest stdcell-library-generic
   (let [lib (stdcell/create-generic-lib :n7)]
@@ -29,6 +63,45 @@
     (let [sorted (stdcell/cells-sorted-by-area lib)]
       (doseq [[a b] (partition 2 1 sorted)]
         (is (<= (:area a) (:area b)))))))
+
+;; mirrors `lef_parse_basic`
+(deftest lef-parse-basic
+  (let [lef-str "
+MACRO INV_X1
+  CLASS CORE ;
+  SIZE 0.8 BY 1.4 ;
+  SYMMETRY X Y ;
+  SITE core_site ;
+  PIN A
+    DIRECTION INPUT ;
+    PORT
+      LAYER metal1 ;
+        RECT 0.0 0.0 0.1 0.4 ;
+    END
+  END A
+  PIN Y
+    DIRECTION OUTPUT ;
+    PORT
+      LAYER metal1 ;
+        RECT 0.6 0.0 0.8 0.4 ;
+    END
+  END Y
+  OBS
+    LAYER metal1 ;
+      RECT 0.2 0.0 0.6 1.4 ;
+  END
+END INV_X1
+"
+        [status lib] (lef/parse-lef lef-str)]
+    (is (= :ok status))
+    (is (= 1 (count (:macros lib))))
+    (let [m (first (:macros lib))]
+      (is (= "INV_X1" (:name m)))
+      (is (= :core (:class m)))
+      (is (< (Math/abs (- (nth (:size m) 0) 0.8)) 1e-6))
+      (is (< (Math/abs (- (nth (:size m) 1) 1.4)) 1e-6))
+      (is (= 2 (count (:pins m))))
+      (is (= 1 (count (:obs m)))))))
 
 ;; mirrors `memory_compiler_sram`
 (deftest memory-compiler-sram
