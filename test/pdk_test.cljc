@@ -12,7 +12,7 @@
 
 (deftest namespace-loads
   (testing "the restored CLJC namespace loads"
-    (is (some? (the-ns 'pdk)))))
+    (is (some? (find-ns 'pdk)))))
 
 ;; mirrors `tech_file_min_width`
 (deftest tech-file-min-width
