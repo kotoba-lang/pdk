@@ -1,6 +1,8 @@
 {:paths ["src" "test"]
- :deps {io.github.kotoba-lang/org-synopsys-liberty {:local/root "../org-synopsys-liberty"}
-        io.github.kotoba-lang/org-si2-lef {:local/root "../org-si2-lef"}}
+ :deps {io.github.kotoba-lang/org-synopsys-liberty {:git/url "https://github.com/kotoba-lang/org-synopsys-liberty.git"
+                                     :git/sha "2bd19297feebef81495f8ef4beebfe62c43fcecd"}
+        io.github.kotoba-lang/org-si2-lef {:git/url "https://github.com/kotoba-lang/org-si2-lef.git"
+                                     :git/sha "31e479675c94e7a558636a8df62a45af018beade"}}
  :aliases {:test {:extra-paths ["test"]
                   :extra-deps {io.github.cognitect-labs/test-runner
                                {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
