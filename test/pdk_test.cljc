@@ -2,7 +2,7 @@
   "Restoration-fidelity tests — one per original kami-pdk Rust test
   (kami-engine/kami-pdk/src/lib.rs `mod tests`, deleted PR #82)."
   (:require [clojure.test :refer [deftest is testing]]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [pdk]
             [pdk.technology :as tech]
             [pdk.stdcell :as stdcell]
