@@ -1,13 +1,13 @@
 (ns pdk.stdcell
   "Standard cell library (generic ~20-cell library generator). Restored
   from kami-pdk's `stdcell` module (deleted PR #82)."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [pdk.technology :as tech]))
 
 (defn- node->debug-str
   "Mirrors Rust's `{:?}` Debug output for the TechNode enum (e.g. :n7 -> \"N7\")."
   [node]
-  (str/upper-case (name node)))
+  (str/upper (name node)))
 
 (def cell-functions
   #{:inv :nand2 :nand3 :nor2 :nor3 :and2 :or2 :xor2
