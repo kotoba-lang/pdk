@@ -37,7 +37,7 @@ a fully-composed PDK front-end again, not a disconnected leaf.
 Restored — 3 modules ported from the original 895-line Rust `lib.rs`, plus
 Liberty/LEF wired back in as facades over the sibling standards repos (see
 above), with all 6 of the original Rust unit tests mirrored 1:1 in
-`test/pdk_test.cljc` (+1 smoke test). Pure data + pure functions throughout;
+`test/pdk_test.cljk` (+1 smoke test). Pure data + pure functions throughout;
 no IO/GPU.
 
 ## Develop
