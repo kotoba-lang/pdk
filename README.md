@@ -43,5 +43,5 @@ no IO/GPU.
 ## Develop
 
 ```bash
-clojure -M:test
+kbb -M:test
 ```
